@@ -1,0 +1,6 @@
+# api
+API_URL=
+
+# session
+COOKIE_ENCRYPTION_KEY = 
+JWT_SIGNING_KEY=

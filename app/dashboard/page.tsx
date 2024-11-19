@@ -1,4 +1,3 @@
-import "server-only";
 import { redirect } from "next/navigation";
 import { getSession, logout } from "@/actions/auth/session";
 import ClientDelayedRedirect from "./_components/ClientDelayedRedirect";
