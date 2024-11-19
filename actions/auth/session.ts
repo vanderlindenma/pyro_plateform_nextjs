@@ -5,12 +5,17 @@ import type { NextRequest } from "next/server";
 import { encryptToJson } from "@/lib/encryption";
 import { apiRequestAccessToken } from "./lib/request_access_token";
 import { set_expire_and_sign, check_signature } from "./lib/session_cookie";
-import type { FormState, ApiAccessTokenResponse } from "./lib/definitions";
+import type {
+  FormState,
+  ApiAccessTokenResponse,
+  SessionPayload,
+} from "./lib/definitions";
 import {
   LoginFormSchema,
   ApiAccessTokenResponseSchema,
 } from "./lib/definitions";
 import { redirect } from "next/navigation";
+import { decryptFromJson } from "@/lib/encryption";
 
 const cookie_encryption_key = Buffer.from(
   process.env.COOKIE_ENCRYPTION_KEY ?? "",
@@ -93,10 +98,29 @@ export async function logout() {
   (await cookies()).set("session", "", { expires: new Date(0) });
 }
 
-export async function getSession() {
+export async function getSession(): Promise<SessionPayload | null> {
   const session = (await cookies()).get("session")?.value;
   if (!session) return null;
   return await check_signature(session);
+}
+
+async function getAccessTokenFromSession(): Promise<string | null> {
+  const session = await getSession();
+  if (!session || !session.user.encrypted_api_token) {
+    console.error("No session or access token found");
+    return null;
+  }
+
+  try {
+    const decryptedToken = decryptFromJson({
+      encrypted_json: session.user.encrypted_api_token,
+      encryption_key: cookie_encryption_key,
+    });
+    return decryptedToken;
+  } catch (error) {
+    console.error("Error decrypting access token:", error);
+    return null;
+  }
 }
 
 export async function updateSession(request: NextRequest) {

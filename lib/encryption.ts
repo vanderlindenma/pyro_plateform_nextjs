@@ -1,10 +1,13 @@
 import "server-only";
 import { createCipheriv, randomBytes, createDecipheriv } from "crypto";
+import { z } from "zod";
 
-export type EncryptedJson = {
-  iv: string;
-  data: string;
-};
+export const EncryptedJsonSchema = z.object({
+  iv: z.string().min(1, { message: "IV must not be empty." }),
+  data: z.string(),
+});
+
+export type EncryptedJson = z.infer<typeof EncryptedJsonSchema>;
 
 export async function encryptToJson({
   message,

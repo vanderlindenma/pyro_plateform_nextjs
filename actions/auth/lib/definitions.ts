@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { EncryptedJson } from "@/lib/encryption";
+import { EncryptedJsonSchema } from "@/lib/encryption";
 
 export const LoginFormSchema = z.object({
   username: z.string().min(1, { message: "Username field must not be empty." }),
@@ -26,11 +26,22 @@ export type FormState =
     }
   | undefined;
 
-export type SessionPayload = {
-  user: {
-    username: string;
-    encrypted_password: EncryptedJson;
-    encrypted_api_token: EncryptedJson;
-  };
-  expires: Date;
-};
+export const SessionPayloadSchema = z.object({
+  user: z.object({
+    username: z.string().min(1, { message: "Username must not be empty." }),
+    encrypted_password: EncryptedJsonSchema,
+    encrypted_api_token: EncryptedJsonSchema,
+  }),
+  expires: z.date(),
+});
+
+export type SessionPayload = z.infer<typeof SessionPayloadSchema>;
+
+// export type SessionPayload = {
+//   user: {
+//     username: string;
+//     encrypted_password: EncryptedJson;
+//     encrypted_api_token: EncryptedJson;
+//   };
+//   expires: Date;
+// };

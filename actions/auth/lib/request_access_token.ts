@@ -24,7 +24,7 @@ export async function apiRequestAccessToken({
   body.append("client_id", "");
   body.append("client_secret", "");
 
-  const res = await fetch(`${api_url}/access-token`, {
+  const res = await fetch(`${api_url}/login/access-token`, {
     method: "POST",
     body: body,
     headers: {
