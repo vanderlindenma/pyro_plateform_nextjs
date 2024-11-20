@@ -25,10 +25,12 @@ export async function check_signature(
   const parsedPayload = SessionPayloadSchema.safeParse(payload);
 
   if (!parsedPayload.success) {
-    console.error("Invalid session payload");
+    console.error(
+      "\u001b[1;31m Invalid session payload in check_signature",
+      new Error().stack
+    );
     return null;
   }
 
-  const validatedPayload = SessionPayloadSchema.parse(payload);
-  return validatedPayload;
+  return parsedPayload.data;
 }

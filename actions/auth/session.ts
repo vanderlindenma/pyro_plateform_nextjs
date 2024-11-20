@@ -1,4 +1,5 @@
 "use server";
+import "server-only";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
@@ -42,7 +43,6 @@ export async function login(
   }
 
   // 2. Query the API for an access token given user's submitted credentials
-
   const res = await apiRequestAccessToken({
     username: validatedFields.data.username,
     password: validatedFields.data.password,
@@ -54,7 +54,7 @@ export async function login(
     return errorMessage;
   }
 
-  const api_token = (await res.json()) as ApiAccessTokenResponse;
+  const api_token = await res.json();
   const validatedApiToken = ApiAccessTokenResponseSchema.safeParse(api_token);
 
   // If the api token is invalid, return early
@@ -104,23 +104,24 @@ export async function getSession(): Promise<SessionPayload | null> {
   return await check_signature(session);
 }
 
-async function getAccessTokenFromSession(): Promise<string | null> {
+export async function getAccessTokenFromSession(): Promise<string | null> {
   const session = await getSession();
-  if (!session || !session.user.encrypted_api_token) {
-    console.error("No session or access token found");
+  if (!session) {
+    console.error("No valid session");
     return null;
   }
 
-  try {
-    const decryptedToken = decryptFromJson({
-      encrypted_json: session.user.encrypted_api_token,
-      encryption_key: cookie_encryption_key,
-    });
-    return decryptedToken;
-  } catch (error) {
-    console.error("Error decrypting access token:", error);
+  const decryptedToken = await decryptFromJson({
+    encrypted_json: session.user.encrypted_api_token,
+    encryption_key: cookie_encryption_key,
+  });
+
+  if (!decryptedToken) {
+    console.error("Failed to decrypt API token");
     return null;
   }
+
+  return decryptedToken;
 }
 
 export async function updateSession(request: NextRequest) {

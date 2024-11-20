@@ -1,13 +1,13 @@
 "use server";
 import { z } from "zod";
 import { alertListSchema } from "../definitions";
-import type { alertList } from "../definitions";
+import type { AlertList } from "../definitions";
 
-export async function getAlertsNoAuth(
+export async function getAlertsAuth(
   api_url: string,
   access_token: string
-): Promise<alertList | null> {
-  const res = await fetch(`${api_url}/alerts/`, {
+): Promise<AlertList | null> {
+  const res = await fetch(`${api_url}/alerts`, {
     method: "GET",
     headers: {
       accept: "application/json",

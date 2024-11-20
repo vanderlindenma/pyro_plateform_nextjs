@@ -32,7 +32,11 @@ export const SessionPayloadSchema = z.object({
     encrypted_password: EncryptedJsonSchema,
     encrypted_api_token: EncryptedJsonSchema,
   }),
-  expires: z.date(),
+  expires: z.string().refine((val) => !isNaN(Date.parse(val)), {
+    message: "Expires must be a valid date string.",
+  }),
+  iat: z.number().optional(),
+  exp: z.number().optional(),
 });
 
 export type SessionPayload = z.infer<typeof SessionPayloadSchema>;
