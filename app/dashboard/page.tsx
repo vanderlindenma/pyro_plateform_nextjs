@@ -72,8 +72,6 @@ export default async function DashboardPage() {
             <p>Alert ID: {event.alert_id}</p>
             <p>Device Login: {event.device_login}</p>
             <p>Device Azimuth: {event.device_azimuth}</p>
-            <p>Media URLs: {event.media_urls.join(", ")}</p>
-            <p>Localizations: {event.localizations.join(", ")}</p>
           </li>
         ))}
       </ul>
