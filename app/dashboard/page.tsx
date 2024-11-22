@@ -3,6 +3,7 @@ import { getSession, logout } from "@/actions/auth/session";
 import ClientDelayedRedirect from "./_components/ClientDelayedRedirect";
 import Link from "next/link";
 import { getUnacknowledgedEvents } from "@/actions/data/run_api_calls";
+import { groupEvents } from "@/actions/data/data_processing/process_api_results";
 
 export default async function DashboardPage() {
   const session = await getSession();
@@ -22,34 +23,7 @@ export default async function DashboardPage() {
 
   console.log(events);
 
-  const grouped_events = events.reduce((acc, item) => {
-    // If the ID does NOT already exists in the accumulator
-    if (!acc[item.id]) {
-      // Initialize the group with empty arrays for properties
-      acc[item.id] = {
-        id: item.id,
-        created_at: item.created_at,
-        lat: item.lat,
-        lon: item.lon,
-        type: item.type,
-        start_ts: item.start_ts,
-        end_ts: item.end_ts,
-        is_acknowledged: item.is_acknowledged,
-        device_id: item.device_id,
-        alert_id: item.alert_id,
-        device_login: item.device_login,
-        device_azimuth: item.device_azimuth,
-        media_urls: [],
-        localizations: [],
-      };
-    }
-
-    // Add the current item's properties to the respective arrays
-    acc[item.id].media_urls.push(item.media_url);
-    acc[item.id].localizations.push(item.localization);
-
-    return acc;
-  }, {});
+  const grouped_events = groupEvents(events);
 
   console.log(grouped_events);
 
@@ -58,7 +32,7 @@ export default async function DashboardPage() {
     <div>
       <h2>Unacknowledged Events</h2>
       <ul>
-        {Object.values(grouped_events).map((event) => (
+        {grouped_events.map((event) => (
           <li key={event.id}>
             <p>ID: {event.id}</p>
             <p>Created At: {event.created_at}</p>

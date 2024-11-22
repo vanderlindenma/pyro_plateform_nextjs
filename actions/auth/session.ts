@@ -17,6 +17,7 @@ import {
 } from "./lib/definitions";
 import { redirect } from "next/navigation";
 import { decryptFromJson } from "@/lib/encryption";
+import { ExpectedError } from "@/lib/handle_expected_errors";
 
 const cookie_encryption_key = Buffer.from(
   process.env.COOKIE_ENCRYPTION_KEY ?? "",
@@ -98,28 +99,20 @@ export async function logout() {
   (await cookies()).set("session", "", { expires: new Date(0) });
 }
 
-export async function getSession(): Promise<SessionPayload | null> {
+export async function getSession(): Promise<SessionPayload> {
   const session = (await cookies()).get("session")?.value;
-  if (!session) return null;
-  return await check_signature(session);
+  if (!session) throw new ExpectedError("No session found");
+  const checked_signature = await check_signature(session);
+  return checked_signature;
 }
 
-export async function getAccessTokenFromSession(): Promise<string | null> {
+export async function getAccessTokenFromSession(): Promise<string> {
   const session = await getSession();
-  if (!session) {
-    console.error("No valid session");
-    return null;
-  }
 
   const decryptedToken = await decryptFromJson({
     encrypted_json: session.user.encrypted_api_token,
     encryption_key: cookie_encryption_key,
   });
-
-  if (!decryptedToken) {
-    console.error("Failed to decrypt API token");
-    return null;
-  }
 
   return decryptedToken;
 }

@@ -2,11 +2,12 @@
 import { z } from "zod";
 import { eventListSchema } from "../definitions";
 import type { EventList } from "../definitions";
+import { ExpectedError } from "@/lib/handle_expected_errors";
 
 export async function getUnacknowledgedEventsAuth(
   api_url: string,
   access_token: string
-): Promise<EventList | null> {
+): Promise<EventList> {
   const res = await fetch(`${api_url}/events/unacknowledged`, {
     method: "GET",
     headers: {
@@ -14,24 +15,17 @@ export async function getUnacknowledgedEventsAuth(
       Authorization: `Bearer ${access_token}`,
     },
   });
-
-  console.log(res);
-
-  if (!res.ok) {
-    console.error(`Error fetching unacknowledged events: ${res.statusText}`);
-    return null;
-  }
+  if (!res.ok)
+    throw new ExpectedError(
+      `Error fetching unacknowledged events: ${res.statusText}`
+    );
 
   const data = await res.json();
   const parsedData = eventListSchema.safeParse(data);
-
-  if (!parsedData.success) {
-    console.error(
-      "Invalid data format for list of unacknowledged events:",
-      parsedData.error
+  if (!parsedData.success)
+    throw new ExpectedError(
+      `Invalid data format for list of unacknowledged events: ${parsedData.error}`
     );
-    return null;
-  }
 
   return parsedData.data;
 }
