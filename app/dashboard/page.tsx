@@ -6,7 +6,7 @@ import { getUnacknowledgedEvents } from "@/actions/data/run_api_calls";
 import { groupEvents } from "@/actions/data/data_processing/process_api_results";
 
 export default async function DashboardPage() {
-  const session = await getSession();
+  const session = await tryCatchExpectedError(getSession, null);
 
   if (!session || !session.user) {
     return (
