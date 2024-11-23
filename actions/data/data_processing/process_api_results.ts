@@ -10,6 +10,17 @@ export const groupEvents = (events: EventList): groupedEventList => {
         acc[event.id] = {
           id: event.id,
           created_at: event.created_at,
+          created_at_display: new Date(event.created_at).toLocaleString(
+            "en-GB",
+            {
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false,
+            }
+          ),
           lat: event.lat,
           lon: event.lon,
           type: event.type,
@@ -19,6 +30,9 @@ export const groupEvents = (events: EventList): groupedEventList => {
           device_id: event.device_id,
           alert_id: event.alert_id,
           device_login: event.device_login,
+          device_login_display: event.device_login
+            .replace(/_[^_]*$/, "")
+            .replace(/_/g, " "),
           device_azimuth: event.device_azimuth,
           media_urls: [],
           localizations: [],
@@ -34,5 +48,5 @@ export const groupEvents = (events: EventList): groupedEventList => {
     {}
   );
 
-  return Object.values(grouped_labelled_events);
+  return Object.values(grouped_labelled_events).reverse();
 };

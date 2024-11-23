@@ -84,7 +84,7 @@ export async function login(
     encrypted_password: encrypted_password,
     encrypted_api_token: encrypted_api_token,
   };
-  const expires = new Date(Date.now() + 10 * 1000);
+  const expires = new Date(Date.now() + 60 * 60 * 1000);
 
   const session = await set_expire_and_sign({ user, expires });
 
@@ -123,7 +123,7 @@ export async function updateSession(request: NextRequest) {
 
   // Refresh the session so it doesn't expire
   const parsed = await check_signature(session);
-  parsed.expires = new Date(Date.now() + 10 * 1000);
+  parsed.expires = new Date(Date.now() + 60 * 60 * 1000);
   const res = NextResponse.next();
   res.cookies.set({
     name: "session",

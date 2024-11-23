@@ -39,6 +39,7 @@ const groupedEventSchema = z.object({
   created_at: z.string().refine((val) => !isNaN(Date.parse(val)), {
     message: "Invalid date format",
   }),
+  created_at_display: z.string(),
   lat: z.number(),
   lon: z.number(),
   type: z.string(),
@@ -58,6 +59,7 @@ const groupedEventSchema = z.object({
   device_id: z.number(),
   alert_id: z.number(),
   device_login: z.string(),
+  device_login_display: z.string(),
   device_azimuth: z.number(),
   media_urls: z.array(z.string()),
   localizations: z.array(z.string()),

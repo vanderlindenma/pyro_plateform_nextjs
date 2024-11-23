@@ -12,7 +12,7 @@ export async function set_expire_and_sign(
   return await new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
-    .setExpirationTime("60 sec from now")
+    .setExpirationTime("1 hr from now")
     .sign(JWT_signin_key);
 }
 

@@ -7,7 +7,7 @@ import { login } from "@/actions/auth/session";
 import { useActionState } from "react";
 
 export default function LoginPage() {
-  const [state, action] = useActionState(login, undefined);
+  const [state, action, pending] = useActionState(login, undefined);
 
   return (
     <form action={action}>
@@ -32,7 +32,7 @@ export default function LoginPage() {
           <p className="text-sm text-red-500">{state.message}</p>
         )}
         <Button type="submit" className="mt-4 w-full">
-          Login
+          {pending ? "Submitting..." : "Login"}
         </Button>
       </div>
     </form>

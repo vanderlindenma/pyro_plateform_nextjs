@@ -1,10 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-// import { generateKey } from "@/lib/encryption";
-
-// const string_key = await generateKey();
-
-// console.log(generateKey());
 
 export const metadata: Metadata = {
   title: "Create Next App",
