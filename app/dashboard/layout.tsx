@@ -1,16 +1,12 @@
-export const metadata = {
-  title: "Next.js Authentication",
-  description: "Example using NextAuth.js",
-};
-
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body>{children}</body>
-    </html>
+    <div>
+      <h1>Dashboard</h1>
+      {children}
+    </div>
   );
 }

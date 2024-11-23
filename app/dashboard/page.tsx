@@ -3,7 +3,9 @@ import { getSession, logout } from "@/actions/auth/session";
 import ClientDelayedRedirect from "./_components/ClientDelayedRedirect";
 import Link from "next/link";
 import { getUnacknowledgedEvents } from "@/actions/data/run_api_calls";
-import { groupEvents } from "@/actions/data/data_processing/process_api_results";
+import { tryCatchExpectedError } from "@/lib/handle_expected_errors";
+import Dashboard from "./_components/Dashboard";
+import exampleUnacknowledgedEvents from "./example_unacknowledged_events.json";
 
 export default async function DashboardPage() {
   const session = await tryCatchExpectedError(getSession, null);
@@ -19,49 +21,10 @@ export default async function DashboardPage() {
     );
   }
 
-  const events = await getUnacknowledgedEvents();
+  // const grouped_events = await getUnacknowledgedEvents();
+  // return <Dashboard grouped_events={grouped_events} />;
 
-  console.log(events);
+  const grouped_events = JSON.stringify(exampleUnacknowledgedEvents);
 
-  const grouped_events = groupEvents(events);
-
-  console.log(grouped_events);
-
-  // return (
-  return (
-    <div>
-      <h2>Unacknowledged Events</h2>
-      <ul>
-        {grouped_events.map((event) => (
-          <li key={event.id}>
-            <p>ID: {event.id}</p>
-            <p>Created At: {event.created_at}</p>
-            <p>Latitude: {event.lat}</p>
-            <p>Longitude: {event.lon}</p>
-            <p>Type: {event.type}</p>
-            <p>Start Timestamp: {event.start_ts}</p>
-            <p>End Timestamp: {event.end_ts}</p>
-            <p>Is Acknowledged: {event.is_acknowledged.toString()}</p>
-            <p>Device ID: {event.device_id}</p>
-            <p>Alert ID: {event.alert_id}</p>
-            <p>Device Login: {event.device_login}</p>
-            <p>Device Azimuth: {event.device_azimuth}</p>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-  //   <div>
-  //     <form
-  //       action={async () => {
-  //         "use server";
-  //         await logout();
-  //         redirect("/");
-  //       }}
-  //     >
-  //       <button type="submit">Logout</button>
-  //     </form>
-  //     <pre>{JSON.stringify(session, null, 2)}</pre>
-  //   </div>
-  // );
+  return <Dashboard grouped_events={grouped_events} />;
 }
