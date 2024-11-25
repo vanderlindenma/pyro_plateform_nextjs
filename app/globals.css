@@ -62,6 +62,22 @@ body {
   }
 }
 
+.crossed-out {
+  position: relative;
+  display: inline-block;
+}
+.crossed-out::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: -5%;
+  width: 110%;
+  height: 1.5px;
+  border-radius: 0.25rem;
+  background-color: white; /* You can change the color */
+  transform: translateY(-50%) rotate(45deg);
+}
+
 @layer base {
   * {
     @apply border-border;
