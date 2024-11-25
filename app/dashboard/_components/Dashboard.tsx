@@ -14,27 +14,9 @@ import {
 } from "@heroicons/react/24/solid";
 
 export default function Dashboard(props: { grouped_events: groupedEventList }) {
-  let initialData = JSON.parse(props.grouped_events).reverse();
+  let initialData = JSON.parse(props.grouped_events);
 
-  initialData.forEach((event) => {
-    event.created_at_display = new Date(event.created_at).toLocaleString(
-      "en-GB",
-      {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-      }
-    );
-    event.device_login_display = event.device_login
-      .replace(/_[^_]*$/, "")
-      .replace(/_/g, " ");
-  });
-  //   props.grouped_events;
-  //   JSON.parse(props.grouped_events);
-  //   console.log(initialData);
+  // console.log(initialData);
 
   const { data, error } = useQuery<groupedEventList>({
     queryKey: ["unacknowledged_events"],
@@ -77,7 +59,7 @@ export default function Dashboard(props: { grouped_events: groupedEventList }) {
           >
             <div className="flex flex-col items-center gap-y-2">
               <p className="font-bold">
-                {event.device_login} - {event.device_azimuth}°
+                {event.device_login_display} - {event.device_azimuth}°
               </p>
               <p>{event.created_at_display}</p>
             </div>
@@ -85,29 +67,31 @@ export default function Dashboard(props: { grouped_events: groupedEventList }) {
         ))}
       </div>
       <div className="h-full flex flex-col gap-y-2 w-[calc(100%-16rem)]">
-        {selectedEvent?.media_urls.map((url, index) =>
-          index === imageId ? (
-            <Image
-              key={index}
+        {selectedEvent?.media_urls.map((url, index) => (
+          <div
+            key={`image_container_${index}`}
+            className={`relative ${index === imageId ? "" : "hidden"}`}
+          >
+            <img
+              key={`image_${index}`}
               src={url}
               alt={`Event media ${index}`}
               className="w-full h-auto rounded-md"
-              width={500}
-              height={500}
-              priority
             />
-          ) : (
-            <Image
-              key={index}
-              src={url}
-              alt={`Event media ${index}`}
-              className="w-full h-auto hidden"
-              width={500}
-              height={500}
-              loading="eager"
-            />
-          )
-        )}
+            {selectedEvent.localizations[index] && (
+              <div
+                key={`prediction_rectangle_${index}`}
+                className="absolute border-2 border-red-500"
+                style={{
+                  left: `${selectedEvent.localizations[index][0] * 100}%`,
+                  top: `${selectedEvent.localizations[index][1] * 100}%`,
+                  width: `${selectedEvent.localizations[index][2] * 100}%`,
+                  height: `${selectedEvent.localizations[index][3] * 100}%`,
+                }}
+              />
+            )}
+          </div>
+        ))}
         <div className="flex flex-row items-center justify-center">
           <Button
             onClick={() => setIsPlaying(!isPlaying)}
@@ -121,7 +105,7 @@ export default function Dashboard(props: { grouped_events: groupedEventList }) {
           </Button>
           <div className="flex-1 items-center relative">
             <CustomSlider
-              className="w-full"
+              className="w-full cursor-pointer"
               value={[imageId]}
               onValueChange={(value: number[]) => setImageId(value[0])}
               min={0}
@@ -132,16 +116,9 @@ export default function Dashboard(props: { grouped_events: groupedEventList }) {
           <Button
             onClick={() => {
               const link = document.createElement("a");
-              link.href =
-                (
-                  document.querySelector(
-                    `img[alt="Event media ${imageId}"]`
-                  ) as HTMLImageElement
-                )?.src || selectedEvent?.media_urls[imageId];
+              link.href = selectedEvent?.media_urls[imageId];
               link.download = `event_media_${imageId}.jpg`;
-              // document.body.appendChild(link);
               link.click();
-              // document.body.removeChild(link);
             }}
             className="ml-2"
           >

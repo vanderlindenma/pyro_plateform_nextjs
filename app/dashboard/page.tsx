@@ -6,6 +6,8 @@ import { getUnacknowledgedEvents } from "@/actions/data/run_api_calls";
 import { tryCatchExpectedError } from "@/lib/handle_expected_errors";
 import Dashboard from "./_components/Dashboard";
 import exampleUnacknowledgedEvents from "./example_unacknowledged_events.json";
+import example_unacknowledged_events_ungrouped from "./example_unacknowledged_events_ungrouped.json";
+import { groupEvents } from "@/actions/data/data_processing/process_api_results";
 import QueryProvider from "./queryProvider";
 import { Suspense } from "react";
 
@@ -69,7 +71,10 @@ export default async function DashboardPage() {
 
 async function DashboardWithInitialData() {
   // const grouped_events = await getUnacknowledgedEvents();
-  const grouped_events = JSON.stringify(exampleUnacknowledgedEvents);
+  // const grouped_events = JSON.stringify(exampleUnacknowledgedEvents);
+  const grouped_events = JSON.stringify(
+    groupEvents(example_unacknowledged_events_ungrouped)
+  );
   return <Dashboard grouped_events={grouped_events} />;
 }
 

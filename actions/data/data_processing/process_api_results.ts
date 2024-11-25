@@ -41,7 +41,23 @@ export const groupEvents = (events: EventList): groupedEventList => {
 
       // Else, add the current item's properties to the respective arrays
       acc[event.id].media_urls.push(event.media_url);
-      acc[event.id].localizations.push(event.localization);
+      // acc[event.id].localizations.push(event.localization);
+      const new_loc = JSON.parse(event.localization)[0];
+      console.log("UNPROCESSED LOC");
+      console.log(new_loc);
+      const processed_localization =
+        typeof new_loc == "undefined"
+          ? null
+          : [
+              new_loc[0],
+              new_loc[1],
+              new_loc[2] - new_loc[0],
+              new_loc[3] - new_loc[1],
+              new_loc[4],
+            ];
+      console.log("PROCESSED LOC");
+      console.log(processed_localization);
+      acc[event.id].localizations.push(processed_localization);
 
       return acc;
     },
