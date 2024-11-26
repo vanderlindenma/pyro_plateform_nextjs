@@ -1,0 +1,47 @@
+import React from "react";
+import { Button } from "@/components/ui/button";
+import { DashboardContext } from "../Dashboard";
+import { useContext } from "react";
+
+const AlertList = () => {
+  const { data } = useContext(DashboardContext);
+
+  return (
+    <div>
+      <div
+        className="xl:flex-col xl:h-full xl:w-64 
+                 w-full h-fit flex flex-row items-center p-4 gap-x-2 gap-y-2 overflow-y-scroll"
+      >
+        {data?.map((event) => (
+          <AlertButton key={event.id} event={event} />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const AlertButton = ({ event }) => {
+  const { selectedEventId, setSelectedEventId, setSelectedEvent, setImageId } =
+    useContext(DashboardContext);
+
+  return (
+    <Button
+      className="w-full h-fit"
+      onClick={() => {
+        setSelectedEventId(event.id);
+        setSelectedEvent(event);
+        setImageId(0);
+      }}
+      variant={event.id === selectedEventId ? "default" : "outline"}
+    >
+      <div className="flex flex-col items-center gap-y-2">
+        <p className="font-bold">
+          {event.device_login_display} - {event.device_azimuth}°
+        </p>
+        <p>{event.created_at_display}</p>
+      </div>
+    </Button>
+  );
+};
+
+export default AlertList;
