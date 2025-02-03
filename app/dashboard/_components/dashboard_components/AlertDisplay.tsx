@@ -23,7 +23,7 @@ const AlertDisplay = () => {
   );
 };
 
-const AlertImage = ({ index, url }) => {
+const AlertImage = ({ index, url }: { index: number; url: string }) => {
   return (
     <img
       key={`image_${index}`}
@@ -34,7 +34,7 @@ const AlertImage = ({ index, url }) => {
   );
 };
 
-const PredictionRectangle = ({ index }) => {
+const PredictionRectangle = ({ index }: { index: number }) => {
   const { selectedEvent } = useContext(DashboardContext);
 
   return (
@@ -42,10 +42,10 @@ const PredictionRectangle = ({ index }) => {
       key={`prediction_rectangle_${index}`}
       className="absolute border-2 border-red-500"
       style={{
-        left: `${selectedEvent.localizations[index][0] * 100}%`,
-        top: `${selectedEvent.localizations[index][1] * 100}%`,
-        width: `${selectedEvent.localizations[index][2] * 100}%`,
-        height: `${selectedEvent.localizations[index][3] * 100}%`,
+        left: `${Number(selectedEvent.localizations[index][0]) * 100}%`,
+        top: `${Number(selectedEvent.localizations[index][1]) * 100}%`,
+        width: `${Number(selectedEvent.localizations[index][2]) * 100}%`,
+        height: `${Number(selectedEvent.localizations[index][3]) * 100}%`,
       }}
     />
   );

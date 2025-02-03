@@ -1,5 +1,4 @@
 "use server";
-import { z } from "zod";
 import { eventListSchema } from "../definitions";
 import type { EventList } from "../definitions";
 import { ExpectedError } from "@/lib/handle_expected_errors";

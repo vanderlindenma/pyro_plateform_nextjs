@@ -2,6 +2,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { DashboardContext } from "../Dashboard";
 import { useContext } from "react";
+import { groupedEvent } from "@/actions/data/definitions";
 
 const AlertList = () => {
   const { data } = useContext(DashboardContext);
@@ -20,7 +21,7 @@ const AlertList = () => {
   );
 };
 
-const AlertButton = ({ event }) => {
+const AlertButton = ({ event }: { event: groupedEvent }) => {
   const { selectedEventId, setSelectedEventId, setSelectedEvent, setImageId } =
     useContext(DashboardContext);
 

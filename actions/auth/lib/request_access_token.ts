@@ -11,10 +11,6 @@ export async function apiRequestAccessToken({
   username,
   password,
 }: apiCredentials): Promise<Response> {
-  // NOTE
-  // The details of the api call below are specitif to the authentication API
-  // this template was build for originally. You will need to replace the code
-  // below by your own bespoke authentication logic.
 
   const body = new URLSearchParams();
   body.append("grant_type", "");

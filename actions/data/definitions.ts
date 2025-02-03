@@ -34,7 +34,7 @@ export const eventListSchema = z.array(eventSchema).optional();
 type Event = z.infer<typeof eventSchema>;
 export type EventList = z.infer<typeof eventListSchema>;
 
-const groupedEventSchema = z.object({
+export const groupedEventSchema = z.object({
   id: z.number(),
   created_at: z.string().refine((val) => !isNaN(Date.parse(val)), {
     message: "Invalid date format",
@@ -65,7 +65,8 @@ const groupedEventSchema = z.object({
   localizations: z.array(z.string()),
 });
 
-export const groupedEventListSchema = z.array(groupedEventSchema).optional();
+export type groupedEvent = z.infer<typeof groupedEventSchema>;
 
-type groupedEvent = z.infer<typeof groupedEventSchema>;
+export const groupedEventListSchema = z.array(groupedEventSchema).optional();
 export type groupedEventList = z.infer<typeof groupedEventListSchema>;
+
