@@ -5,7 +5,7 @@ import * as SliderPrimitive from "@radix-ui/react-slider";
 
 import { cn } from "@/lib/utils";
 
-const match_thumb_adjust = (index, max_index) => {
+const match_thumb_adjust = (index: number, max_index: number): number => {
   const mid_point = max_index / 2;
   return (-8 * (index - mid_point)) / mid_point;
 };
@@ -26,15 +26,15 @@ const CustomSlider = React.forwardRef<
       <SliderPrimitive.Range className="absolute h-full bg-secondary" />
     </SliderPrimitive.Track>
 
-    {Array.from({ length: props.max + 1 }).map((_, index) => (
+    {Array.from({ length: props.max ?? 0 + 1 }).map((_, index) => (
       <div
         key={index}
         style={{
           transform: "var(--radix-slider-thumb-transform)",
           position: "absolute",
-          left: `calc(${(index / props.max) * 100}% + ${match_thumb_adjust(
+          left: `calc(${(index / (props.max ?? 0)) * 100}% + ${match_thumb_adjust(
             index,
-            props.max
+            props.max ?? 0
           )}px)`,
         }}
         className={`text-xs text-gray-400 rounded-full flex flex-col justify-center items-center bg-white border h-4 w-4`}
