@@ -10,8 +10,8 @@ const AlertList = () => {
   return (
     <div>
       <div
-        className="xl:flex-col xl:h-full xl:w-64 
-                 w-full h-fit flex flex-row items-center p-4 gap-x-2 gap-y-2 overflow-y-scroll"
+        className="xl:flex-col xl:h-full xl:w-64 xl:gap-y-2 xl:overflow-y-scroll xl:overflow-x-hidden
+                 w-full h-fit flex flex-row items-center p-4 gap-x-2 gap-y-2 overflow-x-scroll overflow-y-hidden"
       >
         {data?.map((event) => (
           <AlertButton key={event.id} event={event} />

@@ -67,8 +67,8 @@ export default function Dashboard(props: { example_data: groupedEventList }) {
           <AlertDisplay />
           <ImageControls />
         </div>
-        <div className="h-full flex flex-col items-center w-64 p-4 gap-y-2 overflow-y-scroll bg-secondary">
-
+        <div className="xl:h-full xl:w-64 w-full flex flex-col items-center  p-4 gap-y-2 bg-secondary">
+          PLACEHOLDER
         </div>
       </div>
       </div>
