@@ -40,12 +40,3 @@ export const SessionPayloadSchema = z.object({
 });
 
 export type SessionPayload = z.infer<typeof SessionPayloadSchema>;
-
-// export type SessionPayload = {
-//   user: {
-//     username: string;
-//     encrypted_password: EncryptedJson;
-//     encrypted_api_token: EncryptedJson;
-//   };
-//   expires: Date;
-// };

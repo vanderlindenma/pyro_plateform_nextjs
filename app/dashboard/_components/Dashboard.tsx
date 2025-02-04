@@ -6,7 +6,8 @@ import { useState, useEffect, createContext } from "react";
 import AlertList from "./dashboard_components/AlertList";
 import AlertDisplay from "./dashboard_components/AlertDisplay";
 import ImageControls from "./dashboard_components/ImageControls";
-import {DashboardContextType, DashboardContextSchema } from "../definitions";
+import Header from "./dashboard_components/Header";
+import {DashboardContextType } from "../definitions";
 
 
 export const DashboardContext = createContext<DashboardContextType>({} as DashboardContextType);
@@ -58,15 +59,18 @@ export default function Dashboard(props: { example_data: groupedEventList }) {
         setIsPlaying: (playing: boolean) => setIsPlaying(playing),
       }}
     >
-      <div className="xl:flex-row h-full flex flex-col gap-x-2">
+      <div className="h-full flex flex-col">
+        <Header />
+      <div className="xl:flex-row h-[calc(100%-3.5rem)] flex flex-col my-2 gap-x-2">
         <AlertList />
-        <div className="xl:h-full xl:w-[calc(100%-16rem)] flex flex-col gap-y-2">
+        <div className="xl:h-full xl:w-[calc(100%-16rem)] xl:p-0 p-2 flex flex-col gap-y-2">
           <AlertDisplay />
           <ImageControls />
         </div>
-        <div className="h-full flex flex-col items-center w-64 p-4 gap-y-2 overflow-y-scroll bg-primary">
+        <div className="h-full flex flex-col items-center w-64 p-4 gap-y-2 overflow-y-scroll bg-secondary">
 
         </div>
+      </div>
       </div>
     </DashboardContext.Provider>
   );

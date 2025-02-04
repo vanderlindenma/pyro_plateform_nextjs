@@ -22,8 +22,8 @@ const CustomSlider = React.forwardRef<
     )}
     {...props}
   >
-    <SliderPrimitive.Track className="relative h-1.5 w-full grow overflow-hidden rounded-full bg-primary/20">
-      <SliderPrimitive.Range className="absolute h-full bg-primary" />
+    <SliderPrimitive.Track className="relative h-1.5 w-full grow overflow-hidden rounded-full bg-secondary/20">
+      <SliderPrimitive.Range className="absolute h-full bg-secondary" />
     </SliderPrimitive.Track>
 
     {Array.from({ length: props.max + 1 }).map((_, index) => (

@@ -8,7 +8,6 @@ import { apiRequestAccessToken } from "./lib/request_access_token";
 import { set_expire_and_sign, check_signature } from "./lib/session_cookie";
 import type {
   FormState,
-  ApiAccessTokenResponse,
   SessionPayload,
 } from "./lib/definitions";
 import {
@@ -49,6 +48,8 @@ export async function login(
     password: validatedFields.data.password,
   });
 
+  console.log("API authentication response:", res);
+
   // If api authentification fails, return early
   if (!res.ok) {
     console.error("API authentication failed:", res.statusText);
@@ -84,9 +85,12 @@ export async function login(
     encrypted_password: encrypted_password,
     encrypted_api_token: encrypted_api_token,
   };
-  const expires = new Date(Date.now() + 60 * 60 * 1000);
+  const expires = new Date(Date.now() + 60 * 60 * 1000 * Number(process.env.SESSION_EXPIRATION_HOURS));
 
-  const session = await set_expire_and_sign({ user, expires });
+  const session = await set_expire_and_sign({ 
+    user:user, 
+    expires: expires.toISOString() 
+  });
 
   // Save the session in a cookie
   (await cookies()).set("session", session, { expires, httpOnly: true });
@@ -95,7 +99,6 @@ export async function login(
 }
 
 export async function logout() {
-  // Destroy the session
   (await cookies()).set("session", "", { expires: new Date(0) });
 }
 
@@ -123,13 +126,13 @@ export async function updateSession(request: NextRequest) {
 
   // Refresh the session so it doesn't expire
   const parsed = await check_signature(session);
-  parsed.expires = new Date(Date.now() + 60 * 60 * 1000);
+  const session_expiration = new Date(Date.now() + 60 * 60 * 1000 * Number(process.env.SESSION_EXPIRATION_HOURS));
   const res = NextResponse.next();
   res.cookies.set({
     name: "session",
     value: await set_expire_and_sign(parsed),
     httpOnly: true,
-    expires: parsed.expires as Date,
+    expires: session_expiration,
   });
   return res;
 }
