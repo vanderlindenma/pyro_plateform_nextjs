@@ -11,7 +11,7 @@ export default function LoginPage() {
 
   return (
     <form action={action}>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-1">
         <div>
           <Label htmlFor="email">Username</Label>
           <Input id="username" name="username" placeholder="m@example.com" />
@@ -20,9 +20,7 @@ export default function LoginPage() {
           )}
         </div>
         <div className="mt-4">
-          <div className="flex items-center justify-between">
             <Label htmlFor="password">Password</Label>
-          </div>
           <Input id="password" type="password" name="password" />
           {state?.errors?.password && (
             <p className="text-sm text-red-500">{state.errors.password}</p>
@@ -38,13 +36,3 @@ export default function LoginPage() {
     </form>
   );
 }
-
-// export function LoginButton() {
-//   const { pending } = useFormStatus();
-
-//   return (
-//     <Button aria-disabled={pending} type="submit" className="mt-4 w-full">
-//       {pending ? "Submitting..." : "Sign up"}
-//     </Button>
-//   );
-// }

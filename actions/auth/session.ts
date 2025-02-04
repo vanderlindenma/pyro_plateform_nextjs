@@ -100,6 +100,7 @@ export async function login(
 
 export async function logout() {
   (await cookies()).set("session", "", { expires: new Date(0) });
+  redirect("/");
 }
 
 export async function getSession(): Promise<SessionPayload> {
