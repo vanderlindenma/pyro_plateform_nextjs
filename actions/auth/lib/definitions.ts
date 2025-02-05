@@ -1,6 +1,17 @@
 import { z } from "zod";
 import { EncryptedJsonSchema } from "@/lib/encryption";
 
+// Preprocess converts string/Date to a Unix timestamp (seconds)
+const unixTimestampPreprocess = z.preprocess(
+  (val) => {
+    if (typeof val === "string" || val instanceof Date) {
+      return Math.floor(new Date(val).getTime() / 1000);
+    }
+    return val;
+  },
+  z.number()
+);
+
 export const LoginFormSchema = z.object({
   username: z.string().min(1, { message: "Username field must not be empty." }),
   password: z.string().min(1, { message: "Password field must not be empty." }),
@@ -35,8 +46,8 @@ export const SessionPayloadSchema = z.object({
   expires: z.string().refine((val) => !isNaN(Date.parse(val)), {
     message: "Expires must be a valid date string.",
   }),
-  iat: z.number().optional(),
-  exp: z.number().optional(),
+  iat: unixTimestampPreprocess.optional(),
+  exp: unixTimestampPreprocess.optional(),
 });
 
 export type SessionPayload = z.infer<typeof SessionPayloadSchema>;

@@ -125,10 +125,16 @@ export async function updateSession(request: NextRequest) {
   const session = request.cookies.get("session")?.value;
   if (!session) return;
 
-  // Refresh the session so it doesn't expire
-  const parsed = await check_signature(session);
-  const session_expiration = new Date(Date.now() + 60 * 60 * 1000 * Number(process.env.SESSION_EXPIRATION_HOURS));
+  // If valid session, refresh it so it doesn't expire
   const res = NextResponse.next();
+  let parsed: SessionPayload;
+  try {
+    parsed = await check_signature(session);
+  } catch (error) {
+    res.cookies.set("session", "", { expires: new Date(0) });
+    return res;
+  }
+  const session_expiration = new Date(Date.now() + 60 * 60 * 1000 * Number(process.env.SESSION_EXPIRATION_HOURS));
   res.cookies.set({
     name: "session",
     value: await set_expire_and_sign(parsed),

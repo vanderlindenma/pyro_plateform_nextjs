@@ -26,7 +26,7 @@ const CustomSlider = React.forwardRef<
       <SliderPrimitive.Range className="absolute h-full bg-secondary" />
     </SliderPrimitive.Track>
 
-    {Array.from({ length: props.max ?? 0 + 1 }).map((_, index) => (
+    {Array.from({ length: (props.max ?? 0) + 1 }).map((_, index) => (
       <div
         key={index}
         style={{
