@@ -14,21 +14,29 @@ export const DashboardContext = createContext<DashboardContextType>({} as Dashbo
 
 export default function Dashboard(props: { example_data: groupedEventList }) {
   
-  const example_data = props.example_data ?? [];
+  const default_event: groupedEvent = {
+    id: -1,
+    created_at: new Date().toISOString(),
+    created_at_display: new Date().toLocaleString(),
+    lat: 0,
+    lon: 0,
+    type: "empty",
+    start_ts: null,
+    end_ts: null,
+    is_acknowledged: false,
+    device_id: -1,
+    alert_id: -1,
+    device_login: "none",
+    device_login_display: "None",
+    device_azimuth: 0,
+    media_urls: [],
+    localizations: [],
+  };
 
-  // 
-  // TODO: Replace example data with auto-refetched data from the API using approach below
-  //
-  // const { data, error } = useQuery<groupedEventList>({
-  //   queryKey: ["unacknowledged_events"],
-  //   queryFn: getUnacknowledgedEvents,
-  //   refetchOnMount: true,
-  //   refetchInterval: 5000, // Refetch every 5 seconds
-  //   refetchIntervalInBackground: true, // Keep refetching even when the window is not focused
-  // });
+  const example_data: groupedEventList = props.example_data ?? [default_event];
 
-  const [selectedEventId, setSelectedEventId] = useState<number>(example_data[0].id);
-  const [selectedEvent, setSelectedEvent] = useState<groupedEvent>(example_data[0]);
+  const [selectedEventId, setSelectedEventId] = useState<number>(example_data?.[0]?.id ?? default_event.id);
+  const [selectedEvent, setSelectedEvent] = useState<groupedEvent>(example_data?.[0] ?? default_event);
   const [imageId, setImageId] = useState<number>(0);
   const [showPrediction, setShowPrediction] = useState<boolean>(true);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
@@ -63,9 +71,20 @@ export default function Dashboard(props: { example_data: groupedEventList }) {
         <Header />
       <div className="xl:flex-row h-[calc(100%-3.5rem)] flex flex-col my-2 gap-x-2">
         <AlertList />
-        <div className="xl:h-full xl:w-[calc(100%-16rem)] xl:p-0 p-2 flex flex-col gap-y-2">
+        <div className={`${selectedEvent.id === -1 ? "" : "hidden"} 
+                          xl:h-full xl:w-[calc(100%-16rem)] aspect-[1280/720] xl:p-0 p-2 flex flex-col gap-y-2`}>
+          <img
+            src="/logo_yellow.png"
+            alt="Pyronear Logo"
+            width={400}
+            height={400}
+            className="mx-auto"
+          />
+        </div>
+        <div className={`${selectedEvent.id === -1 ? "hidden" : ""} 
+                          xl:h-full xl:w-[calc(100%-16rem)] xl:p-0 p-2 flex flex-col gap-y-2`}>
           <AlertDisplay />
-          <ImageControls />
+          <ImageControls/>
         </div>
         <div className="xl:h-full xl:w-64 w-full flex flex-col items-center  p-4 gap-y-2 bg-secondary">
           PLACEHOLDER
