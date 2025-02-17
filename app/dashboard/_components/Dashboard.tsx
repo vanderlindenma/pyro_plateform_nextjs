@@ -72,7 +72,7 @@ export default function Dashboard(props: { example_data: groupedEventList }) {
       <div className="xl:flex-row h-[calc(100%-3.5rem)] flex flex-col my-2 gap-x-2">
         <AlertList />
         <div className={`${selectedEvent.id === -1 ? "" : "hidden"} 
-                          xl:h-full xl:w-[calc(100%-16rem)] aspect-[1280/720] xl:p-0 p-2 flex flex-col gap-y-2`}>
+                          xl:h-full xl:w-[calc(100%-16rem)] aspect-[1280/720] xl:p-0 p-2 flex flex-col items-center justify-center gap-y-2`}>
           <img
             src="/logo_yellow.png"
             alt="Pyronear Logo"
@@ -80,6 +80,13 @@ export default function Dashboard(props: { example_data: groupedEventList }) {
             height={400}
             className="mx-auto"
           />
+
+          <div className="text-center">
+            No alerts at the moment.
+          </div>
+          <div className="text-center">
+            Alerts will appear in the left pannel when smoke is detected.
+          </div>
         </div>
         <div className={`${selectedEvent.id === -1 ? "hidden" : ""} 
                           xl:h-full xl:w-[calc(100%-16rem)] xl:p-0 p-2 flex flex-col gap-y-2`}>
