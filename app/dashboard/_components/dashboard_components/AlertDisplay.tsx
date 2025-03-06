@@ -1,80 +1,70 @@
 import React from "react";
-import { useContext, useRef, useState, useEffect } from "react";
+import { useContext, useState, useEffect } from "react";
 import { DashboardContext } from "../Dashboard";
+import { DashboardContextType } from "@/app/dashboard/definitions";
 
 const AlertDisplay = () => {
-  const { selectedEvent, imageId, showPrediction } =
-    useContext(DashboardContext);
+  const { selectedEvent, imageId, showPrediction } = useContext(DashboardContext);
   const [isLoading, setIsLoading] = useState(true);
-  const [showLoadingUI, setShowLoadingUI] = useState(false);
-  const isMounted = useRef<boolean>(false);
+  const [loadError, setLoadError] = useState(false);
+  const [currSelectedEvent, setCurrSelectedEvent] = useState<DashboardContextType['selectedEvent'] | null>(selectedEvent);
+  
+  const [currImageId, setCurrImageId] = useState<number | undefined>(0);
+  const [imageURL, setImageURL] = useState<string | undefined>(selectedEvent?.media_urls[0]);
 
-  // Reset loading state when selectedEvent changes
+  if (imageId !== currImageId) {
+    setCurrImageId(imageId);
+    setImageURL(selectedEvent?.media_urls[imageId]);
+  }
+
+  if (selectedEvent?.id !== currSelectedEvent?.id) {
+    setCurrSelectedEvent(selectedEvent);
+    setImageURL(selectedEvent?.media_urls[imageId]);
+    setIsLoading(true);
+  }
+
   useEffect(() => {
-    if(isMounted.current){
-      console.log("selectedEvent changed");
-      if (selectedEvent?.id) {
-        setIsLoading(true);
-        setShowLoadingUI(false);
-        
-        const loadingTimer = setTimeout(() => {
-          setShowLoadingUI(true);
-        }, 200);
-
-        return () => clearTimeout(loadingTimer);
+    selectedEvent?.media_urls.map((url, index) => {
+      const preloadImage = new Image();
+      preloadImage.onload = () => {
+        if (index === 0) {
+          setIsLoading(false);
+        }
       }
-    } else {
-      isMounted.current = true;
-    }
+      preloadImage.src = url;
+
+      if (preloadImage.naturalWidth === 0) {
+        setLoadError(true);
+        setIsLoading(false);
+      }
+
+      if (preloadImage.complete) {
+        setIsLoading(false);
+      }
+    })
   }, [selectedEvent?.id]);
 
   return (
     <div>
-      {selectedEvent?.media_urls.map((url, index) => (
-        <div
-          key={`image_container_${index}`}
-          className={`relative ${index === imageId ? "" : "hidden"}`}
-        >
-          <AlertImage 
-            index={index} 
-            url={url} 
-            isLoading={isLoading}
-            showLoadingUI={showLoadingUI}
-            onLoad={() => setIsLoading(false)}
-          />
-          {showPrediction && selectedEvent.localizations[index] && !isLoading && (
-            <PredictionRectangle index={index} />
-          )}
-        </div>
-      ))}
-    </div>
-  );
-};
-
-const AlertImage = ({ 
-  index, 
-  url, 
-  isLoading, 
-  showLoadingUI, 
-  onLoad 
-}: { 
-  index: number; 
-  url: string;
-  isLoading: boolean;
-  showLoadingUI: boolean;
-  onLoad: () => void;
-}) => {
-  const [loadError, setLoadError] = useState(false);
-
-  return (
-    <div className="relative">
-      <div className={`${showLoadingUI || !isLoading ? 'hidden' : ''} flex items-center justify-center bg-gray-100 rounded-md w-full aspect-[1280/720]`}>
-      </div>
-      <div className={`${!showLoadingUI || !isLoading ? 'hidden' : ''} flex items-center justify-center bg-gray-100 rounded-md w-full aspect-[1280/720]`}>
+      <div className={`${isLoading ? 'image-loading-screen-animation' : 'hidden'} flex items-center justify-center bg-gray-100 rounded-md w-full aspect-[1280/720]`}>
         <div className="flex flex-col items-center gap-2">
           <img src="/favicon.ico" alt="Loading" className="animate-pulse w-12 h-12" />
           <p className="text-gray-500">Images are loading...</p>
         </div>
+      </div>
+      <div className="relative">
+      <img 
+        src={imageURL}
+        alt="Error loading image"
+        className={`w-full h-auto rounded-md aspect-[1280/720] ${!loadError && !isLoading ? '' : 'hidden'}`}
+        onError={() => {
+          setLoadError(true);
+          setIsLoading(false);
+        }}
+      />
+       {showPrediction && selectedEvent.localizations[imageId] && !isLoading && !loadError && (
+            <PredictionRectangle index={imageId} selectedEvent={selectedEvent} />
+          )}
       </div>
       <div className={`${loadError && !isLoading ? '' : 'hidden'} flex items-center justify-center bg-gray-100 rounded-md w-full aspect-[1280/720]`}>
         <div className="flex flex-col items-center gap-2">
@@ -84,23 +74,12 @@ const AlertImage = ({
           <p className="text-gray-500">Images could not be loaded</p>
         </div>
       </div>
-      <img
-        src={url}
-        alt={`Event media ${index}`}
-        className={`w-full h-auto rounded-md ${isLoading || loadError ? 'hidden' : ''}`}
-        onLoad={onLoad}
-        onError={() => {
-          setLoadError(true);
-          onLoad(); // Call onLoad to remove loading state
-        }}
-      />
     </div>
   );
 };
 
-const PredictionRectangle = ({ index }: { index: number }) => {
-  const { selectedEvent } = useContext(DashboardContext);
-
+const PredictionRectangle = ({ index, selectedEvent }: 
+  { index: number, selectedEvent: DashboardContextType['selectedEvent'] }) => {
   return (
     <div
       key={`prediction_rectangle_${index}`}
