@@ -4,44 +4,28 @@ import { DashboardContext } from "../Dashboard";
 import { DashboardContextType } from "@/app/dashboard/definitions";
 
 const AlertDisplay = () => {
+  console.log("AlertDisplay rendered");
   const { selectedEvent, imageId, showPrediction } = useContext(DashboardContext);
   const [isLoading, setIsLoading] = useState(true);
-  const [loadError, setLoadError] = useState(false);
-  const [currSelectedEvent, setCurrSelectedEvent] = useState<DashboardContextType['selectedEvent'] | null>(selectedEvent);
+  // const [loadError, setLoadError] = useState(Array(selectedEvent?.media_urls.length).fill(false));
+  const [currSelectedEvent, setCurrSelectedEvent] = useState<DashboardContextType['selectedEvent']>(selectedEvent);
   
-  const [currImageId, setCurrImageId] = useState<number | undefined>(0);
-  const [imageURL, setImageURL] = useState<string | undefined>(selectedEvent?.media_urls[0]);
+  // const [currImageId, setCurrImageId] = useState<number>(0);
+  // const [imageURL, setImageURL] = useState<string>(selectedEvent?.media_urls[0]);
 
-  if (imageId !== currImageId) {
-    setCurrImageId(imageId);
-    setImageURL(selectedEvent?.media_urls[imageId]);
-  }
+  // if (imageId !== currImageId) {
+  //   setCurrImageId(imageId);
+  //   // setImageURL(selectedEvent?.media_urls[imageId]);
+  // }
 
   if (selectedEvent?.id !== currSelectedEvent?.id) {
     console.log("selectedEvent changed");
     setCurrSelectedEvent(selectedEvent);
-    setImageURL(selectedEvent?.media_urls[imageId]);
+    // setImageURL(selectedEvent?.media_urls[imageId]);
     setIsLoading(true);
   }
 
-  useEffect(() => {
-    selectedEvent?.media_urls.map((url, index) => {
-      const preloadImage = new Image();
-  
-      preloadImage.onload = () => {
-        if (index === 0) {
-          setIsLoading(false);
-        }
-      }
-
-      preloadImage.onerror = () => {
-        setLoadError(true);
-        setIsLoading(false);
-      }
-
-      preloadImage.src = url;
-    })
-  }, [selectedEvent?.id]);
+  console.log("isLoading:", isLoading);
 
   return (
     <div>
@@ -51,18 +35,58 @@ const AlertDisplay = () => {
           <p className="text-gray-500">Images are loading...</p>
         </div>
       </div>
+      { selectedEvent?.media_urls.map((url, index) => (
+        <AlertImage 
+          key={index}
+          visible={imageId === index} 
+          showPrediction={showPrediction} 
+          isLoading={isLoading} 
+          imageURL={url}
+          predictionLoacalizations={selectedEvent.localizations[index]} 
+          onLoad={index === 0 ? 
+            () => {
+              console.log("IMAGE ONLOAD")
+              console.log(index)
+              setIsLoading(false)} : 
+            () => {}} 
+        />
+      ))}
+    </div>
+  );
+};
+
+const AlertImage = ({ visible, showPrediction, isLoading, imageURL, predictionLoacalizations, onLoad}: 
+  { visible: boolean, showPrediction: boolean, isLoading: boolean, imageURL: string, predictionLoacalizations: number[], onLoad: () => void }) => {
+  
+    const [loadError, setLoadError] = useState(false);
+
+    useEffect(() => {
+      setLoadError(false);
+
+      const preloadImage = new Image();
+     
+      preloadImage.onload = onLoad
+
+      preloadImage.onerror = () => {
+        setLoadError(true)
+      }
+
+      preloadImage.src = imageURL;
+      // preloadImage.src = "coucou_gamin!";
+      // preloadImage.src = Math.random() < 0.5 ? imageURL : "coucou_gamin!";
+      
+    }, [imageURL]);
+  
+    return (
+    <div className={`${visible ? '' : 'hidden'}`}>
       <div className="relative">
       <img 
         src={imageURL}
         alt="Error loading image"
         className={`w-full h-auto rounded-md aspect-[1280/720] ${!loadError && !isLoading ? '' : 'hidden'}`}
-        onError={() => {
-          setLoadError(true);
-          setIsLoading(false);
-        }}
       />
-       {showPrediction && selectedEvent.localizations[imageId] && !isLoading && !loadError && (
-            <PredictionRectangle index={imageId} selectedEvent={selectedEvent} />
+      {showPrediction && predictionLoacalizations && !isLoading && !loadError && (
+            <PredictionRectangle localizations={predictionLoacalizations} />
           )}
       </div>
       <div className={`${loadError && !isLoading ? '' : 'hidden'} flex items-center justify-center bg-gray-100 rounded-md w-full aspect-[1280/720]`}>
@@ -76,18 +100,16 @@ const AlertDisplay = () => {
     </div>
   );
 };
-
-const PredictionRectangle = ({ index, selectedEvent }: 
-  { index: number, selectedEvent: DashboardContextType['selectedEvent'] }) => {
+const PredictionRectangle = ({localizations}: 
+    { localizations: number[] }) => {
   return (
     <div
-      key={`prediction_rectangle_${index}`}
       className="absolute border-2 border-red-500"
       style={{
-        left: `${Number(selectedEvent.localizations[index][0]) * 100}%`,
-        top: `${Number(selectedEvent.localizations[index][1]) * 100}%`,
-        width: `${Number(selectedEvent.localizations[index][2]) * 100}%`,
-        height: `${Number(selectedEvent.localizations[index][3]) * 100}%`,
+        left: `${localizations[0] * 100}%`,
+        top: `${localizations[1] * 100}%`,
+        width: `${localizations[2] * 100}%`,
+        height: `${localizations[3] * 100}%`,
       }}
     />
   );

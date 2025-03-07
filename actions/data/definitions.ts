@@ -62,7 +62,7 @@ export const groupedEventSchema = z.object({
   device_login_display: z.string(),
   device_azimuth: z.number(),
   media_urls: z.array(z.string()),
-  localizations: z.array(z.string()),
+  localizations: z.array(z.array(z.number())),
 });
 
 export type groupedEvent = z.infer<typeof groupedEventSchema>;
