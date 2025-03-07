@@ -18,6 +18,7 @@ const AlertDisplay = () => {
   }
 
   if (selectedEvent?.id !== currSelectedEvent?.id) {
+    console.log("selectedEvent changed");
     setCurrSelectedEvent(selectedEvent);
     setImageURL(selectedEvent?.media_urls[imageId]);
     setIsLoading(true);
@@ -26,21 +27,19 @@ const AlertDisplay = () => {
   useEffect(() => {
     selectedEvent?.media_urls.map((url, index) => {
       const preloadImage = new Image();
+  
       preloadImage.onload = () => {
         if (index === 0) {
           setIsLoading(false);
         }
       }
-      preloadImage.src = url;
 
-      if (preloadImage.naturalWidth === 0) {
+      preloadImage.onerror = () => {
         setLoadError(true);
         setIsLoading(false);
       }
 
-      if (preloadImage.complete) {
-        setIsLoading(false);
-      }
+      preloadImage.src = url;
     })
   }, [selectedEvent?.id]);
 
