@@ -9,18 +9,18 @@ import QueryProvider from "./queryProvider";
 import { Suspense } from "react";
 
 export default async function DashboardPage() {
-  const session = await tryCatchExpectedError(getSession, null);
-
-  if (!session || !session.user) {
-    return (
-      <div>
-        <p>You must be logged in to access the dashboard. </p>
-        <p> You are being redirected to the login page</p>
-        <Link href="/">Click here if you are not redirected</Link>
-        <ClientDelayedRedirect delay={3000} destination={"/"} />
-      </div>
-    );
-  }
+  // Skip session check
+  // const session = await tryCatchExpectedError(getSession, null);
+  // if (!session || !session.user) {
+  //   return (
+  //     <div>
+  //       <p>You must be logged in to access the dashboard. </p>
+  //       <p> You are being redirected to the login page</p>
+  //       <Link href="/">Click here if you are not redirected</Link>
+  //       <ClientDelayedRedirect delay={3000} destination={"/"} />
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="h-full w-full">
